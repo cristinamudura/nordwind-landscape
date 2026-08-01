@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "name": "nordwind-landscape",
+    "filename": "nordwind-landscape.crayon-c4-project.json",
+    "description": "Curated system-of-systems model of the Nordwind Retail estate. Structure flows in from per-repo slices; meaning is decided here.",
+    "createdAt": "2026-08-01T00:00:00.000Z",
+    "modifiedAt": "2026-08-01T00:00:00.000Z"
+  },
+  "c4": {
+    "meta": {
+      "title": "Nordwind Retail — system landscape"
+    },
+    "nodeTypes": {
+      "Person": {
+        "color": "#D45612",
+        "bg": "#FFF4EC",
+        "border": "#FFA468",
+        "sel": "#F26B1F"
+      },
+      "External System": {
+        "color": "#4F4839",
+        "bg": "#F5F0E8",
+        "border": "#C9BFAE",
+        "sel": "#6F6757"
+      },
+      "Software System": {
+        "color": "#1C5A50",
+        "bg": "#ECF6F4",
+        "border": "#7DC3B8",
+        "sel": "#2E8C7E"
+      },
+      "Container": {
+        "color": "#A8420C",
+        "bg": "#FFE3CF",
+        "border": "#FFC79E",
+        "sel": "#F26B1F"
+      },
+      "Component": {
+        "color": "#383224",
+        "bg": "#FBF8F4",
+        "border": "#E7DFD2",
+        "sel": "#6F6757"
+      },
+      "Code": {
+        "color": "#2A2620",
+        "bg": "#F4F0EA",
+        "border": "#DCD3C4",
+        "sel": "#6F6757"
+      }
+    },
+    "nodes": {
+      "person:shopper": {
+        "name": "Shopper",
+        "description": "A customer buying outdoor gear on nordwind.example.",
+        "icon": "",
+        "tags": {
+          "type": "Person"
+        }
+      },
+      "system:storefront": {
+        "name": "Storefront",
+        "description": "The web storefront: product browsing, cart, checkout. Owned by Team Storefront (repo: nordwind-storefront).",
+        "icon": "",
+        "tags": {
+          "type": "Software System",
+          "tech": "Next.js"
+        }
+      },
+      "system:orders": {
+        "name": "Orders",
+        "description": "Order intake, pricing and settlement. Owned by Team Orders (repo: nordwind-orders).",
+        "icon": "",
+        "tags": {
+          "type": "Software System",
+          "tech": "Java / Spring Boot"
+        }
+      },
+      "system:payments": {
+        "name": "Payments",
+        "description": "Charge authorization, capture and the money ledger. Owned by Team Payments (repo: nordwind-payments).",
+        "icon": "",
+        "tags": {
+          "type": "Software System",
+          "tech": ".NET 8"
+        }
+      },
+      "ext:stripe": {
+        "name": "Stripe",
+        "description": "External card processor.",
+        "icon": "",
+        "tags": {
+          "type": "External System"
+        }
+      },
+      "ext:postgres": {
+        "name": "PostgreSQL",
+        "description": "Order database (managed).",
+        "icon": "",
+        "tags": {
+          "type": "External System"
+        }
+      },
+      "ext:kafka": {
+        "name": "Kafka",
+        "description": "Event backbone; carries settlement events to finance.",
+        "icon": "",
+        "tags": {
+          "type": "External System"
+        }
+      }
+    },
+    "relationships": [
+      {
+        "from": "person:shopper",
+        "to": "system:storefront",
+        "label": "browses and buys on"
+      },
+      {
+        "from": "system:storefront",
+        "to": "system:orders",
+        "label": "places orders",
+        "tech": "HTTPS/JSON"
+      },
+      {
+        "from": "system:storefront",
+        "to": "system:payments",
+        "label": "authorizes payments",
+        "tech": "HTTPS/JSON"
+      },
+      {
+        "from": "system:orders",
+        "to": "ext:postgres",
+        "label": "stores orders in",
+        "tech": "JDBC"
+      },
+      {
+        "from": "system:orders",
+        "to": "ext:kafka",
+        "label": "publishes settlements to"
+      },
+      {
+        "from": "system:payments",
+        "to": "ext:stripe",
+        "label": "captures charges via",
+        "tech": "HTTPS"
+      }
+    ],
+    "layers": {
+      "context": {
+        "label": "Nordwind — System Landscape",
+        "diagramType": "context",
+        "parent": null,
+        "subject": null,
+        "nodes": [
+          "person:shopper",
+          "system:storefront",
+          "system:orders",
+          "system:payments",
+          "ext:stripe",
+          "ext:postgres",
+          "ext:kafka"
+        ],
+        "groups": []
+      }
+    }
+  }
+}

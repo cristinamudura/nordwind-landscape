@@ -1,0 +1,40 @@
+# Pulls the latest architecture slice from every Nordwind service repo. When any
+# slice changed upstream, opens a review PR — the landscape model is never
+# redrawn, only re-reviewed.
+name: refresh-slices
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch the latest slices
+        run: |
+          set -e
+          for repo in storefront orders payments; do
+            curl -fsSL \
+              "https://raw.githubusercontent.com/cristinamudura/nordwind-$repo/main/architecture/model.json" \
+              -o "slices/$repo.json"
+          done
+
+      - name: Open a review PR when slices drifted
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: architecture/refresh-slices
+          title: "Architecture: upstream slices changed"
+          commit-message: "chore(architecture): refresh upstream slices"
+          body: |
+            One or more repo slices changed upstream. Review what structure
+            changed, then fold the accepted changes into
+            `landscape/nordwind-landscape.json` (curation lives there — names,
+            descriptions, cross-system relationships).
